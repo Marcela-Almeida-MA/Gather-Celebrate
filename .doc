@@ -1,0 +1,1072 @@
+# Sistema de Convites Digitais
+
+## 1. Visão geral
+
+O sistema será uma plataforma para criação e publicação de convites digitais personalizados.
+
+O usuário poderá criar uma conta, acessar seu painel, criar múltiplos convites, escolher um tema, preencher as informações do evento, adicionar fotos, história, timeline, sugestões de presentes e informações de Pix.
+
+Cada convite publicado terá um endereço público próprio.
+
+Os convidados não precisam possuir conta ou realizar login.
+
+### Exemplo
+
+Usuário cria:
+
+**Chá da Pietra**
+
+O sistema disponibiliza:
+
+`https://seudominio.com/convite/pietra`
+
+O usuário compartilha esse endereço pelo WhatsApp, Instagram ou qualquer outro meio.
+
+O convidado acessa diretamente o convite, sem autenticação.
+
+---
+
+# 2. Objetivos
+
+O sistema deve permitir:
+
+* Criar convites digitais.
+* Editar convites existentes.
+* Escolher temas visuais.
+* Personalizar informações.
+* Adicionar imagens.
+* Criar uma história/timeline.
+* Adicionar sugestões de presentes com valores.
+* Informar chave Pix.
+* Adicionar QR Code Pix.
+* Adicionar links de transmissão para eventos online.
+* Visualizar uma prévia.
+* Publicar e despublicar convites.
+* Gerar um link público para cada convite.
+* Gerenciar vários convites através de um único usuário.
+
+---
+
+# 3. Perfis
+
+O sistema terá dois níveis de acesso.
+
+## 3.1 Usuário
+
+Usuário cadastrado no sistema.
+
+Pode:
+
+* Criar convites.
+* Editar seus convites.
+* Excluir seus convites.
+* Duplicar convites.
+* Escolher temas.
+* Adicionar fotos.
+* Adicionar presentes.
+* Configurar Pix.
+* Publicar convites.
+* Despublicar convites.
+* Visualizar seus próprios convites.
+
+Um usuário só pode acessar e alterar os próprios convites.
+
+## 3.2 Convidado
+
+Não possui conta.
+
+Pode:
+
+* Acessar o convite através do link.
+* Visualizar as informações.
+* Visualizar fotos.
+* Ler a história.
+* Visualizar a timeline.
+* Ver sugestões de presentes.
+* Copiar a chave Pix.
+* Visualizar o QR Code Pix.
+* Acessar o link de transmissão.
+
+---
+
+# 4. Conceito de evento e tema
+
+Tipo de evento e tema são entidades diferentes.
+
+## Tipo de evento
+
+Define o contexto do convite.
+
+Exemplos:
+
+* Aniversário
+* Chá de bebê
+* Chá de panela
+* Casamento
+* Batizado
+* Formatura
+* Noivado
+* Debutante
+
+## Tema
+
+Define a identidade visual.
+
+Exemplos:
+
+* Jardim
+* Safari
+* Bosque
+* Flores
+* Arco-íris
+* Espaço
+* Fundo do mar
+* Dinossauro
+* Tropical
+* Minimalista
+* Elegante
+
+O tema não deve ser relacionado a gênero.
+
+Exemplo:
+
+`Chá de bebê + Jardim`
+
+`Aniversário + Jardim`
+
+`Casamento + Jardim`
+
+O mesmo tema pode ser utilizado em diferentes tipos de eventos.
+
+---
+
+# 5. Stack tecnológica
+
+## Frontend
+
+* Next.js
+* React
+* TypeScript
+* Tailwind CSS
+
+## Backend
+
+* Next.js Server Actions
+* API Routes quando necessário
+
+## Banco de dados
+
+* PostgreSQL através do Supabase
+
+## Autenticação
+
+* Supabase Auth
+
+## Armazenamento
+
+* Supabase Storage
+
+## Hospedagem
+
+* Vercel
+
+---
+
+# 6. Arquitetura geral
+
+```text
+                    SISTEMA
+                       │
+          ┌────────────┴────────────┐
+          │                         │
+          ▼                         ▼
+      USUÁRIO                    CONVIDADO
+          │                         │
+        Login                    Sem login
+          │                         │
+          ▼                         ▼
+       PAINEL                 LINK PÚBLICO
+          │                         │
+          ▼                         ▼
+      CONVITES                 CONVITE
+          │                         │
+          ├── Tema                  │
+          ├── Fotos                 │
+          ├── História              │
+          ├── Timeline              │
+          ├── Presentes             │
+          ├── Pix                   │
+          └── Evento                │
+                                    │
+                                    ▼
+                              VISUALIZAÇÃO
+```
+
+---
+
+# 7. Estrutura de páginas
+
+## Área pública
+
+```text
+/
+```
+
+Página inicial do sistema.
+
+```text
+/convite/[slug]
+```
+
+Página pública do convite.
+
+Exemplo:
+
+```text
+/convite/pietra
+```
+
+---
+
+## Autenticação
+
+```text
+/login
+/cadastro
+/recuperar-senha
+```
+
+---
+
+## Painel
+
+```text
+/painel
+/painel/convites
+/painel/convites/novo
+/painel/convites/[id]
+/painel/convites/[id]/editar
+/painel/convites/[id]/fotos
+/painel/convites/[id]/timeline
+/painel/convites/[id]/presentes
+/painel/convites/[id]/preview
+/painel/conta
+```
+
+---
+
+# 8. Banco de dados
+
+## 8.1 users
+
+Usuários cadastrados.
+
+```text
+users
+-------------------------
+id
+name
+email
+created_at
+updated_at
+```
+
+A autenticação será gerenciada pelo Supabase Auth.
+
+---
+
+## 8.2 event_types
+
+Tipos de eventos.
+
+```text
+event_types
+-------------------------
+id
+name
+slug
+description
+active
+created_at
+```
+
+Exemplo:
+
+```text
+1 | Chá de bebê | cha-de-bebe
+2 | Aniversário | aniversario
+3 | Casamento   | casamento
+```
+
+---
+
+## 8.3 themes
+
+Temas disponíveis.
+
+```text
+themes
+-------------------------
+id
+name
+slug
+description
+category
+thumbnail
+preview_image
+active
+created_at
+updated_at
+```
+
+Exemplo:
+
+```text
+1 | Jardim Encantado | jardim-encantado
+2 | Safari           | safari
+3 | Minimalista      | minimalista
+```
+
+---
+
+## 8.4 invitations
+
+Tabela principal do sistema.
+
+```text
+invitations
+-------------------------
+id
+user_id
+event_type_id
+theme_id
+
+slug
+
+title
+description
+story
+
+event_date
+event_time
+
+is_online
+online_platform
+online_url
+
+location
+address
+city
+state
+
+pix_key
+pix_name
+pix_qrcode
+
+status
+
+created_at
+updated_at
+```
+
+### Status possíveis
+
+```text
+draft
+published
+archived
+```
+
+---
+
+# 9. Fotos
+
+## invitation_photos
+
+```text
+invitation_photos
+-------------------------
+id
+invitation_id
+url
+type
+position
+caption
+created_at
+```
+
+### Tipos
+
+```text
+cover
+story
+timeline
+gallery
+```
+
+As imagens serão armazenadas no Supabase Storage.
+
+O banco armazena somente os dados necessários para localizar a imagem.
+
+---
+
+# 10. Timeline
+
+## timeline_items
+
+```text
+timeline_items
+-------------------------
+id
+invitation_id
+title
+description
+date
+image_url
+position
+created_at
+updated_at
+```
+
+Exemplo:
+
+```text
+Abril de 2026
+Nossa história começou.
+
+[foto]
+
+Junho de 2026
+Descobrimos que nossa família iria crescer.
+
+[foto]
+
+Novembro de 2026
+Estamos esperando Pietra.
+
+[foto]
+```
+
+A timeline é opcional.
+
+---
+
+# 11. Presentes
+
+## gifts
+
+```text
+gifts
+-------------------------
+id
+invitation_id
+name
+description
+value
+image
+position
+active
+created_at
+updated_at
+```
+
+Exemplo:
+
+```text
+Kit bebê       R$ 80,00
+Roupinhas      R$ 60,00
+Kit fraldas    R$ 100,00
+Brinquedo      R$ 50,00
+```
+
+Os valores são definidos pelo criador do convite.
+
+---
+
+# 12. Pix
+
+Inicialmente, o Pix poderá ser configurado diretamente no convite.
+
+Campos:
+
+```text
+pix_key
+pix_name
+pix_qrcode
+```
+
+O convite poderá apresentar:
+
+* Chave Pix.
+* Nome do beneficiário.
+* QR Code.
+* Botão "Copiar chave Pix".
+
+---
+
+# 13. Eventos online
+
+O convite pode ser presencial ou online.
+
+### Presencial
+
+```text
+is_online = false
+```
+
+Pode apresentar:
+
+* endereço;
+* cidade;
+* estado;
+* local.
+
+### Online
+
+```text
+is_online = true
+online_platform = "Google Meet"
+online_url = "https://..."
+```
+
+Plataformas inicialmente:
+
+* Google Meet
+* Zoom
+* YouTube
+* WhatsApp
+* Outro
+
+Não haverá integração com essas plataformas na primeira versão.
+
+O usuário apenas informa o link que deseja disponibilizar.
+
+---
+
+# 14. Temas
+
+Os temas devem funcionar como componentes visuais reutilizáveis.
+
+Cada tema deve definir:
+
+* Cores.
+* Tipografia.
+* Bordas.
+* Botões.
+* Cards.
+* Espaçamentos.
+* Elementos decorativos.
+* Estilo da timeline.
+* Estilo da galeria.
+* Estilo da capa.
+
+A estrutura de conteúdo permanece a mesma.
+
+Exemplo:
+
+```text
+Convite
+ ├── Capa
+ ├── Evento
+ ├── História
+ ├── Timeline
+ ├── Galeria
+ ├── Presentes
+ ├── Pix
+ └── Rodapé
+```
+
+O tema controla a apresentação desses elementos.
+
+---
+
+# 15. Editor
+
+O sistema não terá inicialmente um editor livre no estilo Canva.
+
+O usuário preencherá informações através de etapas.
+
+## Etapa 1 — Evento
+
+```text
+Tipo de evento
+Nome
+Data
+Horário
+```
+
+## Etapa 2 — Tema
+
+```text
+Escolher tema
+```
+
+## Etapa 3 — Informações
+
+```text
+Local
+ou
+Evento online
+```
+
+## Etapa 4 — História
+
+```text
+Título
+Texto
+```
+
+## Etapa 5 — Fotos
+
+Upload e organização das imagens.
+
+## Etapa 6 — Timeline
+
+Adicionar acontecimentos e fotos.
+
+## Etapa 7 — Presentes
+
+Adicionar:
+
+```text
+Nome
+Descrição
+Valor
+Imagem
+```
+
+## Etapa 8 — Pix
+
+```text
+Chave Pix
+Nome
+QR Code
+```
+
+## Etapa 9 — Personalização
+
+Opções disponibilizadas pelo tema.
+
+## Etapa 10 — Revisão
+
+Visualização completa do convite.
+
+## Etapa 11 — Publicação
+
+Publicar o convite.
+
+---
+
+# 16. Preview
+
+O preview deve utilizar exatamente os mesmos componentes da página pública.
+
+Isso evita que o usuário veja uma coisa no editor e outra depois da publicação.
+
+```text
+Editor
+   │
+   ▼
+InvitationRenderer
+   │
+   ├── Preview
+   │
+   └── Página pública
+```
+
+A única diferença é que o preview não precisa estar publicado.
+
+---
+
+# 17. Publicação
+
+Ao publicar:
+
+1. Validar os dados.
+2. Verificar se o slug está disponível.
+3. Salvar alterações.
+4. Alterar status para `published`.
+5. Disponibilizar o endereço público.
+
+Exemplo:
+
+```text
+https://seudominio.com/convite/pietra
+```
+
+---
+
+# 18. Slug
+
+Cada convite terá um slug único.
+
+Exemplo:
+
+```text
+pietra
+```
+
+URL:
+
+```text
+/convite/pietra
+```
+
+Caso esteja ocupado:
+
+```text
+pietra-2
+```
+
+ou o sistema pode sugerir automaticamente outro slug.
+
+---
+
+# 19. Segurança
+
+As áreas privadas exigem autenticação.
+
+```text
+/login
+/painel/*
+```
+
+As páginas públicas não exigem autenticação:
+
+```text
+/convite/*
+```
+
+Cada usuário só poderá acessar seus próprios registros.
+
+Exemplo:
+
+```text
+Usuário A
+ ├── Convite 1
+ └── Convite 2
+
+Usuário B
+ ├── Convite 3
+ └── Convite 4
+```
+
+O controle de acesso será implementado através das políticas RLS do Supabase.
+
+---
+
+# 20. Fluxo do usuário
+
+```text
+Cadastro
+   ↓
+Login
+   ↓
+Painel
+   ↓
+Criar convite
+   ↓
+Escolher tipo de evento
+   ↓
+Escolher tema
+   ↓
+Preencher dados
+   ↓
+Adicionar fotos
+   ↓
+Adicionar história
+   ↓
+Adicionar timeline
+   ↓
+Adicionar presentes
+   ↓
+Configurar Pix
+   ↓
+Visualizar
+   ↓
+Publicar
+   ↓
+Receber link
+   ↓
+Compartilhar
+```
+
+---
+
+# 21. Fluxo do convidado
+
+```text
+Recebe link
+    ↓
+Abre convite
+    ↓
+Visualiza capa
+    ↓
+Conhece a história
+    ↓
+Visualiza evento
+    ↓
+Acessa transmissão
+    ↓
+Visualiza presentes
+    ↓
+Copia Pix
+```
+
+Nenhuma etapa exige cadastro.
+
+---
+
+# 22. Painel do usuário
+
+O painel deve ser simples.
+
+### Menu
+
+```text
+Meus convites
+Criar convite
+Minha conta
+Sair
+```
+
+### Card de convite
+
+```text
+┌─────────────────────────────┐
+│                             │
+│      [Imagem do convite]    │
+│                             │
+├─────────────────────────────┤
+│ Chá da Pietra               │
+│ 14/11/2026                  │
+│                             │
+│ ● Publicado                 │
+│                             │
+│ [Editar] [Visualizar]       │
+│ [Copiar link] [Mais]        │
+└─────────────────────────────┘
+```
+
+---
+
+# 23. Estrutura de componentes
+
+```text
+components/
+│
+├── ui/
+│   ├── Button
+│   ├── Input
+│   ├── Modal
+│   ├── Dialog
+│   └── Card
+│
+├── editor/
+│   ├── EventForm
+│   ├── ThemeSelector
+│   ├── StoryEditor
+│   ├── PhotoUploader
+│   ├── TimelineEditor
+│   ├── GiftEditor
+│   ├── PixEditor
+│   └── Preview
+│
+├── convite/
+│   ├── InvitationRenderer
+│   ├── InvitationHeader
+│   ├── EventSection
+│   ├── StorySection
+│   ├── TimelineSection
+│   ├── GallerySection
+│   ├── GiftsSection
+│   ├── PixSection
+│   └── InvitationFooter
+│
+└── temas/
+    ├── ThemeCard
+    ├── ThemePreview
+    └── ThemeSelector
+```
+
+---
+
+# 24. Services
+
+A lógica de negócio deve ficar separada dos componentes visuais.
+
+```text
+services/
+│
+├── invitations/
+│   ├── createInvitation
+│   ├── updateInvitation
+│   ├── deleteInvitation
+│   ├── publishInvitation
+│   └── duplicateInvitation
+│
+├── themes/
+│   ├── getThemes
+│   └── getTheme
+│
+├── gifts/
+│   ├── createGift
+│   ├── updateGift
+│   └── deleteGift
+│
+└── photos/
+    ├── uploadPhoto
+    ├── deletePhoto
+    └── reorderPhotos
+```
+
+---
+
+# 25. Estrutura final do banco
+
+```text
+users
+ │
+ ├───────────────< invitations
+ │                       │
+ │                       ├──── event_types
+ │                       │
+ │                       ├──── themes
+ │                       │
+ │                       ├────────< invitation_photos
+ │                       │
+ │                       ├────────< timeline_items
+ │                       │
+ │                       └────────< gifts
+ │
+```
+
+---
+
+# 26. MVP
+
+A primeira versão deve conter somente:
+
+### Autenticação
+
+* Cadastro
+* Login
+* Logout
+* Recuperação de senha
+
+### Convites
+
+* Criar
+* Editar
+* Excluir
+* Duplicar
+* Publicar
+* Despublicar
+
+### Conteúdo
+
+* Evento
+* História
+* Fotos
+* Timeline
+* Presentes
+* Pix
+* Link de transmissão
+
+### Temas
+
+* Listagem
+* Preview
+* Seleção
+
+### Painel
+
+* Meus convites
+* Criar convite
+* Editar
+* Visualizar
+* Copiar link
+
+### Público
+
+* Convite responsivo
+* Sem login
+* URL pública
+
+---
+
+# 27. Funcionalidades futuras
+
+Não fazem parte do MVP, mas a arquitetura deve permitir adicionar:
+
+* RSVP/confirmação de presença.
+* Lista de convidados.
+* Estatísticas de visualização.
+* QR Code do convite.
+* Domínio personalizado.
+* Mais temas.
+* Sistema de pagamento.
+* Assinaturas.
+* Compartilhamento automático.
+* Integração com WhatsApp.
+* Integração com Google Calendar.
+* Música no convite.
+* Animações avançadas.
+* Galeria de vídeos.
+* Comentários/mensagens dos convidados.
+
+---
+
+# 28. Princípio de UX
+
+O sistema não deve parecer um editor complexo.
+
+A experiência desejada é:
+
+**Escolha → Preencha → Personalize → Visualize → Publique.**
+
+O usuário não precisa entender tecnologia, banco de dados, templates ou componentes.
+
+Ele deve simplesmente responder às perguntas necessárias e visualizar o convite sendo construído.
+
+---
+
+# 29. Arquitetura resumida
+
+```text
+                         ┌──────────────────────┐
+                         │       NEXT.JS        │
+                         └──────────┬───────────┘
+                                    │
+             ┌──────────────────────┼──────────────────────┐
+             │                      │                      │
+             ▼                      ▼                      ▼
+          AUTENTICAÇÃO           PAINEL                PÚBLICO
+             │                      │                      │
+             │                  CONVITES              /convite/[slug]
+             │                      │                      │
+             │               ┌──────┼──────┐               │
+             │               │      │      │               │
+             │              Tema   Fotos  Conteúdo          │
+             │                      │                      │
+             └──────────────────────┼──────────────────────┘
+                                    │
+                                    ▼
+                            ┌───────────────┐
+                            │   SUPABASE    │
+                            │               │
+                            │ Auth          │
+                            │ PostgreSQL    │
+                            │ Storage       │
+                            └───────────────┘
+```
+
+## 30. Regra principal do projeto
+
+O **convite é o produto**.
+
+O painel, banco, autenticação e editor existem para facilitar a criação dele.
+
+Portanto, toda decisão de desenvolvimento deve priorizar:
+
+**simplicidade para criar + qualidade visual do convite + facilidade para compartilhar.**
