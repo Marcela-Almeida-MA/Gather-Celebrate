@@ -1,5 +1,7 @@
 import express from 'express'
 import cors from 'cors'
+import authRoutes from './routes/authRoutes.js'
+import invitationRoutes from './routes/invitationRoutes.js'
 
 const app = express()
 
@@ -12,5 +14,8 @@ app.get('/api/health', (_req, res) => {
     message: 'Backend do Convite Digital funcionando!',
   })
 })
+
+app.use('/api/auth', authRoutes)
+app.use('/api/invitations', invitationRoutes)
 
 export default app
